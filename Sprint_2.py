@@ -1,0 +1,55 @@
+# Mapping the singular coin names to their dollar values
+coin_values = {
+    "penny": 0.01,
+    "nickel": 0.05,
+    "dime": 0.10,
+    "quarter": 0.25
+}
+
+def normalize_coin_name(name):
+    if name.endswith("ies"):
+        return name[:-3] + "y"  # e.g., "pennies" -> "penny"
+    elif name.endswith("s"):
+        return name[:-1]  # e.g., "nickels" -> "nickel"
+    return name  # already singular
+
+def parse_input(sentence):
+    #  Clean and split the input
+    sentence = sentence.replace(" and", "")  # Remove 'and'
+    words = sentence.split()  # Split into words
+
+    # Validating input
+    if len(words) % 2 != 0:
+        print("Error: Incomplete input. Each quantity must have a coin name.")
+        return None
+
+    total = 0.0
+
+    # Processing each pair (quantity, coin)
+    for i in range(0, len(words), 2):
+        quantity_str = words[i]
+        coin_name = words[i + 1]
+
+        try:
+            quantity = int(quantity_str)
+        except ValueError:
+            print(f"Error: '{quantity_str}' is not a valid number.")
+            return None
+
+        normalized_coin = normalize_coin_name(coin_name)
+
+        if normalized_coin not in coin_values:
+            print(f"Warning: '{normalized_coin}' is not a recognized coin type. Skipping.")
+            continue
+
+        coin_value = coin_values[normalized_coin]
+        total += quantity * coin_value
+
+    # Round and return total
+    return round(total, 2)
+
+if __name__ == "__main__":
+    input_sentence = input("Enter a coin sentence: ")
+    dollar_amount = parse_input(input_sentence)
+    if dollar_amount is not None:
+        print(f"${dollar_amount:.2f}")
